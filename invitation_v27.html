@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1c120b">
+<title>2026 송년회 초대장</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Pinyon+Script&family=Nanum+Myeongjo:wght@400;700;800&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* 레이아웃: 남색 밤하늘 위 단일 열. 첫 화면에 봉투 버튼, 아래에 연회 안내·순서, 봉투를 열면 양피지 초대장이 모달로 등장 */
+:root {
+  color-scheme: dark;
+  --navy: #1c120b;
+  --navy-2: #2c1b11;
+  --gold: #c9aa6c;
+  --gold-soft: #e2c992;
+  --paper: #f1e5c8;
+  --ink: #3a2819;
+  --muted: #cdb99c;
+  --wax: #74222f;
+  --display: "Cinzel", Georgia, serif;
+  --pen: "Pinyon Script", "Snell Roundhand", cursive;
+  --pen-ink: #2b3552;
+  --title-ko: "Nanum Myeongjo", "Gowun Batang", Georgia, serif;
+  --body: "Gowun Batang", "Nanum Myeongjo", serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { word-break: keep-all; overflow-wrap: break-word; margin: 0; background: var(--navy); color: var(--paper); font-family: var(--body); line-height: 1.75; overflow-x: hidden; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 5px; }
+
+/* 배경: 직접 그린 밤의 실내 기차역 · 가스등 깜빡임 · 바닥 증기(canvas) · 법랑 승강장 표지판 */
+.sky { position: absolute; inset: 0 0 auto; height: 980px; overflow: hidden; z-index: -1; background: var(--navy); }
+.station { position: absolute; inset: 0; width: 100%; height: 100%; }
+.lamp { animation: flicker 5.3s steps(1, end) infinite; }
+@keyframes flicker { 0%, 100% { opacity: 1; } 8% { opacity: .88; } 10% { opacity: .97; } 46% { opacity: .93; } 48% { opacity: 1; } 71% { opacity: .9; } 73% { opacity: .98; } }
+#steam { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 420px; }
+.platform-sign { position: absolute; top: 118px; right: max(20px, 7%); display: flex; flex-direction: column; align-items: center; gap: 0;
+  padding: 8px 18px 10px; border-radius: 8px; background: linear-gradient(#1f4a3a, #163829); color: #f1e5c8;
+  box-shadow: inset 0 0 0 2px #f1e5c8, inset 0 0 0 4px #1f4a3a, inset 0 0 0 5px #c9aa6c, 0 6px 16px #0008; }
+.platform-sign::before, .platform-sign::after { content: ""; position: absolute; top: -118px; width: 2px; height: 118px; background: linear-gradient(transparent, #c9aa6c99); }
+.platform-sign::before { left: 22%; }
+.platform-sign::after { right: 22%; }
+.ps-word { font-family: var(--display); font-size: 12px; letter-spacing: .28em; }
+.ps-num { font-family: var(--title-ko); font-weight: 800; font-size: 24px; line-height: 1.2; letter-spacing: .1em; }
+.horizon { position: absolute; inset: 55% 0 0; background: linear-gradient(transparent 10%, #1c120b66 60%, var(--navy)); }
+
+/* 공통 장식 */
+.eyebrow { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0;
+  font-family: var(--display); color: var(--gold); font-size: 13px; letter-spacing: .3em; }
+.eyebrow::before, .eyebrow::after { content: ""; width: 32px; height: 1px; background: #c9aa6c66; }
+.ornament { display: flex; align-items: center; justify-content: center; gap: 16px; color: var(--gold); font-size: 22px; }
+.ornament::before, .ornament::after { content: ""; width: 56px; height: 1px; background: linear-gradient(90deg, transparent, #c9aa6c99); }
+.ornament::after { transform: rotate(180deg); }
+
+/* 헤더 */
+.site-header { display: flex; align-items: center; justify-content: space-between; max-width: 1080px; margin: auto; padding: 24px 20px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--gold); text-decoration: none; font-family: var(--title-ko); font-weight: 700; font-size: 18px; }
+/* 로고 높이 = 글씨 3줄 높이(19px × 3 = 57px) */
+.brand svg { height: 57px; width: auto; aspect-ratio: 101 / 131; flex: none; }
+.brand-text { display: flex; flex-direction: column; font-family: var(--display); font-weight: 600; font-size: 16px; line-height: 19px; letter-spacing: .08em; }
+.header-note { font-family: var(--display); font-size: 12px; letter-spacing: .25em; color: #e0c99a; }
+
+/* 히어로 */
+.hero { text-align: center; padding: 36px 20px 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; min-height: 755px; }
+.hero .details-link { margin-top: auto; }
+h1 { margin: 6px 0 0; font-family: var(--title-ko); font-weight: 800; color: var(--gold-soft); text-shadow: 0 2px 30px #b88b4133; line-height: 1.25; }
+h1 .year { display: block; font-family: var(--display); font-weight: 400; font-size: clamp(52px, 11vw, 96px); letter-spacing: .08em; line-height: 1.05; }
+h1 .name { display: block; font-size: clamp(22px, 5vw, 32px); letter-spacing: .12em; margin-top: 10px; }
+.club { margin: 0; color: var(--muted); font-size: 18px; }
+.hero-message { margin: 0; color: #efe2cc; font-size: 18px; line-height: 1.95; }
+
+/* 봉투 버튼 */
+.envelope-button { background: none; border: 0; padding: 16px 12px 8px; perspective: 900px; margin-top: 8px; }
+.envelope { display: block; position: relative; width: 300px; height: 178px; border-radius: 3px; background: #cdbb92;
+  box-shadow: 0 18px 45px #0008, 0 0 70px #b89a4c1c; transition: transform .3s, filter .3s; }
+.envelope-button:hover .envelope { transform: translateY(-5px); filter: brightness(1.07); }
+.env-letter { position: absolute; inset: 13px 15px 20px; padding-top: 22px; background: var(--paper); color: #6f5432;
+  font-family: var(--display); font-size: 11px; letter-spacing: .2em; transition: transform .6s; }
+.env-front { position: absolute; inset: 0; border-radius: 3px; background: linear-gradient(25deg, #e6d6b2, #cdbb92);
+  clip-path: polygon(0 0, 50% 53%, 100% 0, 100% 100%, 0 100%); }
+.env-front::after { content: ""; position: absolute; inset: 9px; border: 1px solid #9e80574d; }
+.env-flap { position: absolute; inset: 0; background: linear-gradient(#f0e1bd, #d6c198);
+  clip-path: polygon(0 0, 100% 0, 50% 59%); transform-origin: top; transition: transform .55s .15s; }
+.seal { position: absolute; z-index: 1; top: 67px; left: 50%; margin-left: -28px; width: 56px; height: 56px; display: grid; place-items: center;
+  border-radius: 47% 44% 49% 43%; color: #e0bb80;
+  background: radial-gradient(circle at 35% 25%, #9a4552, var(--wax) 62%, #4a1520);
+  box-shadow: 1px 4px 6px #2a101877, inset 0 0 0 3px #8a3846, inset 0 0 0 5px #57202c;
+  transition: box-shadow .25s, transform .35s, opacity .3s; }
+.seal svg { width: 34px; height: 34px; }
+.env-address { position: absolute; bottom: 20px; left: 0; right: 0; color: #6f563b; font-family: var(--title-ko); font-size: 16px; }
+.opening .seal { box-shadow: 0 0 36px #eac277; transform: scale(1.15); opacity: 0; }
+.opening .env-flap { transform: rotateX(180deg); }
+.opening .env-letter { transform: translateY(-36px); }
+/* 탑승 연출: 기차 · 연기 · 화면 흔들림 */
+.train-track { position: absolute; left: 0; right: 0; z-index: 40; overflow: hidden; pointer-events: none; }
+.train-track[hidden] { display: none; }
+#smoke { position: absolute; inset: 0; width: 100%; height: 100%; }
+.train { position: absolute; left: 0; bottom: 0; height: var(--train-h, 290px); width: auto; aspect-ratio: 1800 / 300; will-change: transform; }
+.train .wheel { transform-box: fill-box; transform-origin: center; animation: spin .28s linear infinite; }
+@keyframes spin { to { transform: rotate(-360deg); } }
+.board-btn:disabled { cursor: default; filter: brightness(.85); }
+/* 티켓 */
+.ticket-stage { --tw: min(90vw, 560px); --u: calc(var(--tw) / 600); position: relative; z-index: 45; display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 10px; perspective: 1100px; }
+.ticket-stage[hidden] { display: none; }
+.ticket-fly { transform-style: preserve-3d; will-change: transform; }
+.ticket-fly.flying .ticket { filter: none; }
+.ticket-float.landed { animation: breathe 3.2s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { transform: translateY(0) rotate(-.4deg); } 50% { transform: translateY(-6px) rotate(.4deg); } }
+.ticket { position: relative; display: block; width: var(--tw); aspect-ratio: 600 / 330; padding: 0; border: 0; background: none; color: #3a2819;
+  filter: drop-shadow(0 14px 22px #000a) drop-shadow(0 0 30px #c9aa6c33); }
+.ticket:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 8px; border-radius: 10px; }
+.ticket-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.t-body { position: absolute; inset: calc(var(--u) * 30) calc(var(--u) * 60); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--u) * 4); text-align: center; word-break: keep-all; }
+.t-route { font-family: var(--display); font-weight: 600; font-size: max(15px, calc(var(--u) * 24)); letter-spacing: .14em; line-height: 1.1; }
+.t-route i { font-family: var(--pen); font-style: normal; font-weight: 400; font-size: 1.25em; letter-spacing: 0; color: var(--pen-ink); padding: 0 .1em; }
+.t-night { font-family: var(--pen); font-size: max(20px, calc(var(--u) * 30)); line-height: 1; color: var(--pen-ink); }
+.t-crest { flex: none; width: max(26px, calc(var(--u) * 40)); height: max(30px, calc(var(--u) * 47)); margin: calc(var(--u) * 2) 0; }
+.t-platform { font-family: var(--display); font-weight: 600; font-size: max(30px, calc(var(--u) * 46)); line-height: 1; letter-spacing: .06em; color: #6e1a26; }
+.t-platform b { font-family: var(--title-ko); font-weight: 800; }
+.t-when { display: flex; flex-direction: column; font-family: var(--title-ko); font-weight: 800; font-size: max(18px, calc(var(--u) * 25)); line-height: 1.3; margin-top: calc(var(--u) * 4); }
+.t-when > span { white-space: nowrap; }
+.t-body > * { flex: none; }
+.t-from { font-family: var(--title-ko); font-weight: 700; font-size: max(16px, calc(var(--u) * 21)); color: #6a5641; }
+.ticket-hint { margin: 0; font-size: 18px; color: #e6dcc4; opacity: 0; transition: opacity .5s; }
+.ticket-hint span { color: var(--gold); }
+.ticket-stage.done .ticket-hint { opacity: 1; }
+.boarding { transition: opacity .2s; }
+.boarding.leaving { opacity: 0; }
+.boarding.gone { display: none; }
+/* 탑승하기 · 건너뛰기 */
+.boarding { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 22px; }
+.board-btn { display: inline-flex; align-items: center; gap: 12px; min-height: 60px; padding: 14px 38px; border-radius: 999px;
+  border: 1px solid #c9aa6c; background: linear-gradient(#8a2a37, var(--wax)); color: #f7ead0;
+  font-family: var(--title-ko); font-weight: 800; font-size: 22px; letter-spacing: .12em;
+  box-shadow: 0 0 0 4px #c9aa6c26, 0 10px 28px #0009, 0 0 40px #c9aa6c22; transition: transform .2s, filter .2s; }
+.board-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.board-btn svg { width: 30px; height: 19px; color: var(--gold-soft); }
+.skip-btn { min-height: 44px; padding: 8px 16px; border: 0; background: none; color: #e2d2b4;
+  font-family: var(--body); font-size: 18px; text-decoration: underline; text-underline-offset: 5px; text-decoration-color: #c9aa6c88; }
+.skip-btn:hover { color: var(--paper); }
+.details-link { margin-top: 14px; font-family: var(--display); font-size: 13px; letter-spacing: .25em; color: #cdb99c; text-decoration: none; }
+
+/* 안내 섹션 */
+.section { max-width: 760px; margin: auto; padding: 48px 20px; text-align: center; display: flex; flex-direction: column; gap: 14px; }
+.section h2 { margin: 6px 0 0; font-family: var(--title-ko); font-weight: 700; font-size: 29px; text-wrap: balance; }
+.section-desc { margin: 0; color: var(--muted); font-size: 17px; }
+.facts { display: grid; grid-template-columns: repeat(2, 1fr); margin: 22px 0 0; padding: 26px 0;
+  border-block: 1px solid #c9aa6c33; }
+.facts > div { padding: 0 10px; }
+.facts > div + div { border-left: 1px solid #c9aa6c33; }
+.facts dt { font-family: var(--display); color: var(--gold); font-size: 17px; letter-spacing: .2em; }
+.facts dt span { display: block; font-size: 26px; margin-bottom: 10px; letter-spacing: 0; }
+.facts dd { margin: 10px 0 0; font-size: 18px; }
+.tbd { color: var(--muted); }
+.links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 10px; }
+.ghost { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 18px; border: 1px solid #c9aa6c66;
+  background: transparent; color: var(--paper); text-decoration: none; font-size: 17px; }
+.ghost:hover { background: #c9aa6c19; }
+
+.timeline { list-style: none; margin: 18px auto 0; padding: 0; width: 100%; max-width: 460px; text-align: left; }
+.timeline li { display: grid; grid-template-columns: 70px 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid #c9aa6c22; }
+.timeline li:last-child { border-bottom: 0; }
+.timeline time { font-family: var(--display); color: var(--gold); font-variant-numeric: tabular-nums; letter-spacing: .05em; }
+.timeline small { display: block; color: var(--muted); font-size: 16px; }
+
+.rsvp-btn { align-self: center; display: inline-flex; align-items: center; gap: 12px; margin-top: 8px; padding: 12px 26px 12px 12px; border-radius: 999px;
+  background: var(--wax); color: #f5e6c8; text-decoration: none; font-family: var(--title-ko); font-weight: 800; font-size: 19px;
+  box-shadow: 0 6px 20px #74222f55, inset 0 0 0 1px #c9aa6c55; }
+.rsvp-btn:hover { filter: brightness(1.1); }
+.rsvp-btn svg { width: 32px; height: 32px; }
+.note { margin: 0; color: var(--muted); font-size: 16px; }
+
+footer { max-width: 1080px; margin: 24px auto 0; padding: 28px 20px 40px; border-top: 1px solid #c9aa6c22;
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; color: #c6b398; font-size: 16px; }
+footer strong { color: var(--paper); font-variant-numeric: tabular-nums; }
+
+/* 모달: 양피지 초대장 */
+dialog { width: min(600px, calc(100% - 24px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid #c9aa6c77;
+  background: var(--navy); color: var(--paper); box-shadow: 0 30px 100px #000a; overscroll-behavior: contain; }
+dialog[open] { animation: reveal .45s ease-out both; }
+dialog::backdrop { background: #120a05d9; backdrop-filter: blur(7px); }
+.toolbar { position: sticky; top: 0; z-index: 2; background: var(--navy); display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; }
+.toolbar > span { font-family: var(--display); font-size: 12px; letter-spacing: .25em; color: var(--gold); }
+.toolbar button { border: 0; background: none; color: var(--paper); padding: 10px; font-size: 17px; }
+.scroll { position: relative; margin: 0 14px; filter: drop-shadow(0 10px 18px #0009); }
+/* 위아래 말린 두루마리 축 */
+.roll { position: relative; z-index: 2; height: 30px; margin: 0 -10px; border-radius: 15px;
+  background: linear-gradient(to bottom, #7d5c33 0%, #c9a874 18%, #f3e3bf 40%, #e2c996 58%, #a8844f 80%, #6b4c28 100%);
+  box-shadow: inset 0 0 0 1px #5a3f1f66; }
+.roll::before, .roll::after { content: ""; position: absolute; top: -5px; width: 22px; height: 40px; border-radius: 6px;
+  background: linear-gradient(to bottom, #6a2a22, #9c4a35 30%, #c27a4f 45%, #7a3326 70%, #4a1a14);
+  box-shadow: inset 0 0 0 1px #c9aa6c88, 0 2px 4px #0006; }
+.roll::before { left: -14px; }
+.roll::after { right: -14px; }
+.roll.top { margin-bottom: -10px; }
+.roll.bottom { margin-top: -10px; }
+.parchment { position: relative; z-index: 1; margin: 0; padding: 52px 30px 44px; text-align: center; color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(to bottom, #6b4c2855 0, transparent 34px, transparent calc(100% - 34px), #6b4c2855 100%),
+    radial-gradient(ellipse at top left, #b58b4440, transparent 50%), radial-gradient(ellipse at bottom right, #b58b4440, transparent 50%),
+    radial-gradient(ellipse at 70% 30%, #a0743514, transparent 40%), radial-gradient(ellipse at 25% 75%, #a0743518, transparent 35%),
+    repeating-linear-gradient(10deg, #61441905 0 1px, transparent 1px 4px);
+  box-shadow: inset 14px 0 22px -14px #7a5326aa, inset -14px 0 22px -14px #7a5326aa;
+  clip-path: polygon(1.6px 0.0%, 0.8px 3.6%, 3.3px 7.1%, 0.4px 10.7%, 2.7px 14.3%, 1.8px 17.9%, 0.3px 21.4%, 2.5px 25.0%, 0.2px 28.6%, 2.2px 32.1%, 0.3px 35.7%, 0.5px 39.3%, 2.1px 42.9%, 4.1px 46.4%, 0.6px 50.0%, 1.1px 53.6%, 3.1px 57.1%, 4.7px 60.7%, 2.9px 64.3%, 2.0px 67.9%, 4.9px 71.4%, 0.2px 75.0%, 4.3px 78.6%, 1.4px 82.1%, 0.7px 85.7%, 0.6px 89.3%, 1.5px 92.9%, 4.1px 96.4%, 0.9px 100.0%, calc(100% - 2.9px) 100.0%, calc(100% - 3.2px) 96.4%, calc(100% - 1.9px) 92.9%, calc(100% - 2.7px) 89.3%, calc(100% - 0.3px) 85.7%, calc(100% - 0.3px) 82.1%, calc(100% - 1.0px) 78.6%, calc(100% - 3.4px) 75.0%, calc(100% - 2.1px) 71.4%, calc(100% - 1.6px) 67.9%, calc(100% - 2.9px) 64.3%, calc(100% - 2.3px) 60.7%, calc(100% - 1.5px) 57.1%, calc(100% - 4.0px) 53.6%, calc(100% - 3.5px) 50.0%, calc(100% - 1.2px) 46.4%, calc(100% - 2.9px) 42.9%, calc(100% - 2.6px) 39.3%, calc(100% - 4.4px) 35.7%, calc(100% - 3.6px) 32.1%, calc(100% - 1.4px) 28.6%, calc(100% - 4.9px) 25.0%, calc(100% - 0.6px) 21.4%, calc(100% - 2.1px) 17.9%, calc(100% - 3.8px) 14.3%, calc(100% - 0.8px) 10.7%, calc(100% - 2.4px) 7.1%, calc(100% - 0.2px) 3.6%, calc(100% - 3.3px) 0.0%); }
+.parchment::before { content: ""; position: absolute; inset: 30px 18px; border: 1px solid #ab8a5399; outline: 1px solid #ab8a5344; outline-offset: 4px; pointer-events: none; }
+.parchment .tbd { color: #8a7458; }
+.parchment { word-break: keep-all; }
+.parchment .crest { width: 64px; height: auto; margin: 0 auto 10px; display: block; }
+.parchment .eyebrow { color: #85643a; }
+.parchment .eyebrow::before, .parchment .eyebrow::after { background: #a5854c88; }
+.parchment h2 { margin: 14px 0 6px; font-family: var(--title-ko); font-weight: 800; font-size: 34px; line-height: 1.35; }
+.parchment h2 span { display: block; font-family: var(--pen); font-weight: 400; font-size: 30px; letter-spacing: 0; color: var(--pen-ink); margin-top: 8px; line-height: 1.3; }
+.parchment .ornament { color: #99763c; margin: 14px 0; }
+.salute { font-family: var(--title-ko); font-weight: 700; margin: 18px 0; }
+.letter p { margin: 0 0 14px; font-size: 18px; line-height: 2; }
+.letter-facts { display: flex; justify-content: space-evenly; gap: 8px; margin: 22px 4px; padding: 18px 0; border-block: 1px solid #a5854c66; }
+.letter-facts dt { font-family: var(--display); font-size: 16px; letter-spacing: .2em; color: #7e5c2d; }
+/* 만년필 필기체: 양피지 안 영어 문구 */
+.parchment .pen { font-family: var(--pen); font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--pen-ink); line-height: 1.3; }
+.parchment .eyebrow.pen { font-size: 26px; }
+.parchment .eyebrow.pen::before, .parchment .eyebrow.pen::after { display: none; }
+.letter-facts dt { font-family: var(--title-ko); font-weight: 800; letter-spacing: .1em; }
+.letter-facts dd { margin: 6px 0 0; font-size: 17px; }
+.signature { font-family: var(--title-ko); color: #6a5641; margin: 18px 0 0; }
+.share { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 24px; padding-top: 22px; border-top: 1px solid #a5854c66; }
+.share-rsvp, .share-copy { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 20px; font-family: var(--title-ko); font-weight: 700; font-size: 18px; text-decoration: none; border-radius: 4px; }
+.share-rsvp { background: var(--wax); color: #f5e6c8; border: 1px solid #4a1520; box-shadow: 0 3px 8px #74222f44; }
+.share-rsvp:hover { filter: brightness(1.1); }
+.share-copy { background: transparent; color: var(--ink); border: 1px solid #8a6a3c99; }
+.share-copy:hover { background: #8a6a3c1a; }
+.share-rsvp:focus-visible, .share-copy:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.share-note { margin: -2px 0 8px; font-size: 16px; color: #6a5641; }
+#status { margin: 8px 0 0; min-height: 1.5em; font-size: 16px; color: #7a5326; }
+#manual-copy { font-size: 16px; text-align: left; }
+#invitation-url { border: 1px solid #8a6a3c99; background: #fffaf0; color: var(--ink); }
+#invitation-url { display: block; width: 100%; margin-top: 8px; padding: 10px; }
+
+@keyframes reveal { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (max-width: 600px) {
+  .header-note { display: none; }
+  .header-note { font-size: 10px; letter-spacing: .15em; }
+  .envelope { width: 276px; height: 166px; }
+  .seal { top: 60px; }
+  .platform-sign { top: 22px; right: 16px; padding: 6px 12px 8px; }
+  .ticket { aspect-ratio: 600 / 440; }
+  .t-body { inset: calc(var(--u) * 34) calc(var(--u) * 34); }
+  .platform-sign::before, .platform-sign::after { top: -22px; height: 22px; }
+  .ps-word { font-size: 13px; letter-spacing: .18em; }
+  .ps-num { font-size: 19px; }
+  .facts dd { font-size: 16px; }
+  .facts dt { font-size: 16px; letter-spacing: .12em; }
+  .scroll { margin: 0 12px; }
+  .parchment { padding: 46px 20px 38px; }
+  .parchment::before { inset: 28px 10px; }
+  .parchment h2 { font-size: 29px; }
+  .letter p { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true">
+  <svg class="station" viewBox="0 0 1440 980" preserveAspectRatio="xMidYMin slice">
+    <defs>
+      <pattern id="brick" width="64" height="28" patternUnits="userSpaceOnUse">
+        <rect width="64" height="28" fill="#24150d"/>
+        <rect x="1" y="1" width="30" height="12" rx="1" fill="#5a3022"/>
+        <rect x="33" y="1" width="30" height="12" rx="1" fill="#52291d"/>
+        <rect x="-15" y="15" width="30" height="12" rx="1" fill="#4d281c"/>
+        <rect x="17" y="15" width="30" height="12" rx="1" fill="#5f3424"/>
+        <rect x="49" y="15" width="30" height="12" rx="1" fill="#55301f"/>
+      </pattern>
+      <linearGradient id="roofGlass" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#5a3420"/><stop offset="1" stop-color="#2a190f"/>
+      </linearGradient>
+      <radialGradient id="glow"><stop offset="0" stop-color="#ffcf7a" stop-opacity=".48"/><stop offset=".45" stop-color="#e8a24e" stop-opacity=".16"/><stop offset="1" stop-color="#c9aa6c" stop-opacity="0"/></radialGradient>
+      <radialGradient id="glowCore"><stop offset="0" stop-color="#fff1c8" stop-opacity=".55"/><stop offset="1" stop-color="#f2cf7a" stop-opacity="0"/></radialGradient>
+      <radialGradient id="warmth" cx="50%" cy="70%" r="70%"><stop offset="0" stop-color="#ff9a3c" stop-opacity=".16"/><stop offset="1" stop-color="#ff9a3c" stop-opacity="0"/></radialGradient>
+      <radialGradient id="readable" cx="50%" cy="46%" r="42%"><stop offset="0" stop-color="#1c120b" stop-opacity=".62"/><stop offset="1" stop-color="#1c120b" stop-opacity="0"/></radialGradient>
+      <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2416"/><stop offset="1" stop-color="#1c120b"/></linearGradient>
+    </defs>
+    <rect width="1440" height="980" fill="#22150d"/>
+    <!-- 아치형 철골 유리 지붕 -->
+    <polygon points="0,330 0,330.0 20,317.4 40,304.7 60,292.1 80,279.6 100,267.2 120,254.9 140,242.8 160,230.8 180,219.0 200,207.4 220,196.1 240,185.0 260,174.2 280,163.7 300,153.5 320,143.6 340,134.1 360,124.9 380,116.2 400,107.8 420,99.9 440,92.4 460,85.4 480,78.9 500,72.8 520,67.2 540,62.1 560,57.5 580,53.4 600,49.9 620,46.9 640,44.4 660,42.5 680,41.1 700,40.3 720,40.0 740,40.3 760,41.1 780,42.5 800,44.4 820,46.9 840,49.9 860,53.4 880,57.5 900,62.1 920,67.2 940,72.8 960,78.9 980,85.4 1000,92.4 1020,99.9 1040,107.8 1060,116.2 1080,124.9 1100,134.1 1120,143.6 1140,153.5 1160,163.7 1180,174.2 1200,185.0 1220,196.1 1240,207.4 1260,219.0 1280,230.8 1300,242.8 1320,254.9 1340,267.2 1360,279.6 1380,292.1 1400,304.7 1420,317.4 1440,330.0 1440,330" fill="url(#roofGlass)"/>
+    <g stroke="#c9aa6c" stroke-opacity=".10" stroke-width="1.5"><line x1="60" y1="292.1" x2="60" y2="330"/><line x1="120" y1="254.9" x2="120" y2="330"/><line x1="180" y1="219.0" x2="180" y2="330"/><line x1="240" y1="185.0" x2="240" y2="330"/><line x1="300" y1="153.5" x2="300" y2="330"/><line x1="360" y1="124.9" x2="360" y2="330"/><line x1="420" y1="99.9" x2="420" y2="330"/><line x1="480" y1="78.9" x2="480" y2="330"/><line x1="540" y1="62.1" x2="540" y2="330"/><line x1="600" y1="49.9" x2="600" y2="330"/><line x1="660" y1="42.5" x2="660" y2="330"/><line x1="720" y1="40.0" x2="720" y2="330"/><line x1="780" y1="42.5" x2="780" y2="330"/><line x1="840" y1="49.9" x2="840" y2="330"/><line x1="900" y1="62.1" x2="900" y2="330"/><line x1="960" y1="78.9" x2="960" y2="330"/><line x1="1020" y1="99.9" x2="1020" y2="330"/><line x1="1080" y1="124.9" x2="1080" y2="330"/><line x1="1140" y1="153.5" x2="1140" y2="330"/><line x1="1200" y1="185.0" x2="1200" y2="330"/><line x1="1260" y1="219.0" x2="1260" y2="330"/><line x1="1320" y1="254.9" x2="1320" y2="330"/><line x1="1380" y1="292.1" x2="1380" y2="330"/></g>
+    <g fill="none" stroke="#c9aa6c" stroke-opacity=".10" stroke-width="1.5"><polyline points="0,330.0 40,312.6 80,295.3 120,278.2 160,261.6 200,245.5 240,230.0 280,215.3 320,201.4 360,188.6 400,176.8 440,166.2 480,156.8 520,148.7 560,142.1 600,136.8 640,133.0 680,130.8 720,130.0 760,130.8 800,133.0 840,136.8 880,142.1 920,148.7 960,156.8 1000,166.2 1040,176.8 1080,188.6 1120,201.4 1160,215.3 1200,230.0 1240,245.5 1280,261.6 1320,278.2 1360,295.3 1400,312.6 1440,330.0"/><polyline points="0,330.0 40,319.5 80,309.2 120,298.9 160,289.0 200,279.3 240,270.0 280,261.2 320,252.9 360,245.1 400,238.1 440,231.7 480,226.1 520,221.2 560,217.2 600,214.1 640,211.8 680,210.5 720,210.0 760,210.5 800,211.8 840,214.1 880,217.2 920,221.2 960,226.1 1000,231.7 1040,238.1 1080,245.1 1120,252.9 1160,261.2 1200,270.0 1240,279.3 1280,289.0 1320,298.9 1360,309.2 1400,319.5 1440,330.0"/><polyline points="0,330.0 40,325.6 80,321.3 120,317.1 160,312.9 200,308.9 240,305.0 280,301.3 320,297.9 360,294.6 400,291.7 440,289.0 480,286.7 520,284.7 560,283.0 600,281.7 640,280.8 680,280.2 720,280.0 760,280.2 800,280.8 840,281.7 880,283.0 920,284.7 960,286.7 1000,289.0 1040,291.7 1080,294.6 1120,297.9 1160,301.3 1200,305.0 1240,308.9 1280,312.9 1320,317.1 1360,321.3 1400,325.6 1440,330.0"/></g>
+    <polyline points="0,330.0 20,317.4 40,304.7 60,292.1 80,279.6 100,267.2 120,254.9 140,242.8 160,230.8 180,219.0 200,207.4 220,196.1 240,185.0 260,174.2 280,163.7 300,153.5 320,143.6 340,134.1 360,124.9 380,116.2 400,107.8 420,99.9 440,92.4 460,85.4 480,78.9 500,72.8 520,67.2 540,62.1 560,57.5 580,53.4 600,49.9 620,46.9 640,44.4 660,42.5 680,41.1 700,40.3 720,40.0 740,40.3 760,41.1 780,42.5 800,44.4 820,46.9 840,49.9 860,53.4 880,57.5 900,62.1 920,67.2 940,72.8 960,78.9 980,85.4 1000,92.4 1020,99.9 1040,107.8 1060,116.2 1080,124.9 1100,134.1 1120,143.6 1140,153.5 1160,163.7 1180,174.2 1200,185.0 1220,196.1 1240,207.4 1260,219.0 1280,230.8 1300,242.8 1320,254.9 1340,267.2 1360,279.6 1380,292.1 1400,304.7 1420,317.4 1440,330.0" fill="none" stroke="#c9aa6c" stroke-opacity=".38" stroke-width="7"/>
+    <polyline points="0,330.0 20,318.7 40,307.3 60,296.1 80,284.9 100,273.7 120,262.7 140,251.8 160,241.1 180,230.5 200,220.1 220,209.9 240,200.0 260,190.3 280,180.9 300,171.7 320,162.9 340,154.3 360,146.2 380,138.3 400,130.8 420,123.7 440,117.0 460,110.7 480,104.8 500,99.4 520,94.4 540,89.8 560,85.7 580,82.0 600,78.9 620,76.2 640,73.9 660,72.2 680,71.0 700,70.2 720,70.0 740,70.2 760,71.0 780,72.2 800,73.9 820,76.2 840,78.9 860,82.0 880,85.7 900,89.8 920,94.4 940,99.4 960,104.8 980,110.7 1000,117.0 1020,123.7 1040,130.8 1060,138.3 1080,146.2 1100,154.3 1120,162.9 1140,171.7 1160,180.9 1180,190.3 1200,200.0 1220,209.9 1240,220.1 1260,230.5 1280,241.1 1300,251.8 1320,262.7 1340,273.7 1360,284.9 1380,296.1 1400,307.3 1420,318.7 1440,330.0" fill="none" stroke="#c9aa6c" stroke-opacity=".18" stroke-width="3"/>
+    <rect x="0" y="328" width="1440" height="26" fill="#2a190f"/>
+    <g stroke="#c9aa6c" stroke-opacity=".28" stroke-width="1.5"><path d="M0 332 L30 352 M30 332 L0 352"/><path d="M30 332 L60 352 M60 332 L30 352"/><path d="M60 332 L90 352 M90 332 L60 352"/><path d="M90 332 L120 352 M120 332 L90 352"/><path d="M120 332 L150 352 M150 332 L120 352"/><path d="M150 332 L180 352 M180 332 L150 352"/><path d="M180 332 L210 352 M210 332 L180 352"/><path d="M210 332 L240 352 M240 332 L210 352"/><path d="M240 332 L270 352 M270 332 L240 352"/><path d="M270 332 L300 352 M300 332 L270 352"/><path d="M300 332 L330 352 M330 332 L300 352"/><path d="M330 332 L360 352 M360 332 L330 352"/><path d="M360 332 L390 352 M390 332 L360 352"/><path d="M390 332 L420 352 M420 332 L390 352"/><path d="M420 332 L450 352 M450 332 L420 352"/><path d="M450 332 L480 352 M480 332 L450 352"/><path d="M480 332 L510 352 M510 332 L480 352"/><path d="M510 332 L540 352 M540 332 L510 352"/><path d="M540 332 L570 352 M570 332 L540 352"/><path d="M570 332 L600 352 M600 332 L570 352"/><path d="M600 332 L630 352 M630 332 L600 352"/><path d="M630 332 L660 352 M660 332 L630 352"/><path d="M660 332 L690 352 M690 332 L660 352"/><path d="M690 332 L720 352 M720 332 L690 352"/><path d="M720 332 L750 352 M750 332 L720 352"/><path d="M750 332 L780 352 M780 332 L750 352"/><path d="M780 332 L810 352 M810 332 L780 352"/><path d="M810 332 L840 352 M840 332 L810 352"/><path d="M840 332 L870 352 M870 332 L840 352"/><path d="M870 332 L900 352 M900 332 L870 352"/><path d="M900 332 L930 352 M930 332 L900 352"/><path d="M930 332 L960 352 M960 332 L930 352"/><path d="M960 332 L990 352 M990 332 L960 352"/><path d="M990 332 L1020 352 M1020 332 L990 352"/><path d="M1020 332 L1050 352 M1050 332 L1020 352"/><path d="M1050 332 L1080 352 M1080 332 L1050 352"/><path d="M1080 332 L1110 352 M1110 332 L1080 352"/><path d="M1110 332 L1140 352 M1140 332 L1110 352"/><path d="M1140 332 L1170 352 M1170 332 L1140 352"/><path d="M1170 332 L1200 352 M1200 332 L1170 352"/><path d="M1200 332 L1230 352 M1230 332 L1200 352"/><path d="M1230 332 L1260 352 M1260 332 L1230 352"/><path d="M1260 332 L1290 352 M1290 332 L1260 352"/><path d="M1290 332 L1320 352 M1320 332 L1290 352"/><path d="M1320 332 L1350 352 M1350 332 L1320 352"/><path d="M1350 332 L1380 352 M1380 332 L1350 352"/><path d="M1380 332 L1410 352 M1410 332 L1380 352"/><path d="M1410 332 L1440 352 M1440 332 L1410 352"/><path d="M0 330 H1440 M0 352 H1440"/></g>
+    <!-- 벽돌 벽 -->
+    <rect x="0" y="354" width="1440" height="506" fill="url(#brick)"/>
+    <path d="M220 820 V560 A70 70 0 0 1 360 560 V820 Z" fill="#24140c" fill-opacity=".55" stroke="#c9aa6c" stroke-opacity=".12"/><path d="M650 820 V560 A70 70 0 0 1 790 560 V820 Z" fill="#24140c" fill-opacity=".55" stroke="#c9aa6c" stroke-opacity=".12"/><path d="M1080 820 V560 A70 70 0 0 1 1220 560 V820 Z" fill="#24140c" fill-opacity=".55" stroke="#c9aa6c" stroke-opacity=".12"/>
+    <rect x="0" y="354" width="1440" height="16" fill="#1a0f08" fill-opacity=".7"/>
+    <g><rect x="102" y="352" width="16" height="508" fill="#3b2416" stroke="#c9aa6c" stroke-opacity=".28"/><path d="M88 352 Q110 380 102 392 M132 352 Q110 380 118 392" fill="none" stroke="#c9aa6c" stroke-opacity=".35" stroke-width="2"/><rect x="96" y="846" width="28" height="14" fill="#3b2416" stroke="#c9aa6c" stroke-opacity=".28"/></g><g><rect x="462" y="352" width="16" height="508" fill="#3b2416" stroke="#c9aa6c" stroke-opacity=".28"/><path d="M448 352 Q470 380 462 392 M492 352 Q470 380 478 392" fill="none" stroke="#c9aa6c" stroke-opacity=".35" stroke-width="2"/><rect x="456" y="846" width="28" height="14" fill="#3b2416" stroke="#c9aa6c" stroke-opacity=".28"/></g><g><rect x="962" y="352" width="16" height="508" fill="#3b2416" stroke="#c9aa6c" stroke-opacity=".28"/><path d="M948 352 Q970 380 962 392 M992 352 Q970 380 978 392" fill="none" stroke="#c9aa6c" stroke-opacity=".35" stroke-width="2"/><rect x="956" y="846" width="28" height="14" fill="#3b2416" stroke="#c9aa6c" stroke-opacity=".28"/></g><g><rect x="1322" y="352" width="16" height="508" fill="#3b2416" stroke="#c9aa6c" stroke-opacity=".28"/><path d="M1308 352 Q1330 380 1322 392 M1352 352 Q1330 380 1338 392" fill="none" stroke="#c9aa6c" stroke-opacity=".35" stroke-width="2"/><rect x="1316" y="846" width="28" height="14" fill="#3b2416" stroke="#c9aa6c" stroke-opacity=".28"/></g>
+    <!-- 가스등 -->
+    <g class="lamp" style="animation-delay:-0.0s"><circle cx="200" cy="700" r="210" fill="url(#glow)"/><circle cx="200" cy="700" r="46" fill="url(#glowCore)"/></g><g stroke="#c9aa6c" stroke-opacity=".7" fill="none" stroke-width="2"><path d="M200 642 V666 M200 642 H160 M160 630 V654"/></g><path d="M188 668 H212 L216 678 L212 716 H188 L184 678 Z" fill="#f2cf7a" fill-opacity=".9" stroke="#8a6a32" stroke-width="2"/><path d="M184 678 H216 M200 668 V716" stroke="#8a6a32" stroke-width="1.5"/><path d="M186 668 L200 656 L214 668 Z" fill="#3a2416" stroke="#c9aa6c" stroke-opacity=".6"/><g class="lamp" style="animation-delay:-1.7s"><circle cx="560" cy="700" r="210" fill="url(#glow)"/><circle cx="560" cy="700" r="46" fill="url(#glowCore)"/></g><g stroke="#c9aa6c" stroke-opacity=".7" fill="none" stroke-width="2"><path d="M560 642 V666 M560 642 H600 M600 630 V654"/></g><path d="M548 668 H572 L576 678 L572 716 H548 L544 678 Z" fill="#f2cf7a" fill-opacity=".9" stroke="#8a6a32" stroke-width="2"/><path d="M544 678 H576 M560 668 V716" stroke="#8a6a32" stroke-width="1.5"/><path d="M546 668 L560 656 L574 668 Z" fill="#3a2416" stroke="#c9aa6c" stroke-opacity=".6"/><g class="lamp" style="animation-delay:-3.4s"><circle cx="880" cy="700" r="210" fill="url(#glow)"/><circle cx="880" cy="700" r="46" fill="url(#glowCore)"/></g><g stroke="#c9aa6c" stroke-opacity=".7" fill="none" stroke-width="2"><path d="M880 642 V666 M880 642 H840 M840 630 V654"/></g><path d="M868 668 H892 L896 678 L892 716 H868 L864 678 Z" fill="#f2cf7a" fill-opacity=".9" stroke="#8a6a32" stroke-width="2"/><path d="M864 678 H896 M880 668 V716" stroke="#8a6a32" stroke-width="1.5"/><path d="M866 668 L880 656 L894 668 Z" fill="#3a2416" stroke="#c9aa6c" stroke-opacity=".6"/><g class="lamp" style="animation-delay:-5.1s"><circle cx="1240" cy="700" r="210" fill="url(#glow)"/><circle cx="1240" cy="700" r="46" fill="url(#glowCore)"/></g><g stroke="#c9aa6c" stroke-opacity=".7" fill="none" stroke-width="2"><path d="M1240 642 V666 M1240 642 H1280 M1280 630 V654"/></g><path d="M1228 668 H1252 L1256 678 L1252 716 H1228 L1224 678 Z" fill="#f2cf7a" fill-opacity=".9" stroke="#8a6a32" stroke-width="2"/><path d="M1224 678 H1256 M1240 668 V716" stroke="#8a6a32" stroke-width="1.5"/><path d="M1226 668 L1240 656 L1254 668 Z" fill="#3a2416" stroke="#c9aa6c" stroke-opacity=".6"/>
+    <!-- 승강장 바닥 -->
+    <rect x="0" y="860" width="1440" height="120" fill="url(#floor)"/>
+    <path d="M0 861 H1440" stroke="#c9aa6c" stroke-opacity=".55" stroke-width="3"/>
+    <path d="M0 882 H1440" stroke="#c9aa6c" stroke-opacity=".22" stroke-width="6" stroke-dasharray="14 10"/>
+    <!-- 글자가 잘 보이도록 가운데를 살짝 어둡게 -->
+    <rect width="1440" height="980" fill="url(#warmth)"/>
+    <rect width="1440" height="980" fill="url(#readable)"/>
+  </svg>
+  <canvas id="steam"></canvas>
+  <div class="platform-sign"><span class="ps-word">Platform</span><span class="ps-num">20</span></div>
+  <div class="horizon"></div>
+</div>
+
+<div class="train-track" id="train-track" aria-hidden="true" hidden>
+  <canvas id="smoke"></canvas>
+  <svg class="train" viewBox="0 0 1800 300" aria-hidden="true">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b23646"/><stop offset=".55" stop-color="#8a2230"/><stop offset="1" stop-color="#5e1520"/></linearGradient>
+    <linearGradient id="boiler" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c24152"/><stop offset=".35" stop-color="#9a2838"/><stop offset="1" stop-color="#5a1420"/></linearGradient>
+    <linearGradient id="brass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d696"/><stop offset="1" stop-color="#9c7a3a"/></linearGradient>
+    <linearGradient id="lit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a8"/><stop offset="1" stop-color="#e2b45c"/></linearGradient>
+  </defs>
+  <ellipse cx="900" cy="292" rx="900" ry="8" fill="#000" fill-opacity=".45"/>
+  <!-- 객차 2량 -->
+  <g><path d="M591 96 Q880.0 58 1169 96 Z" fill="#1d1724" stroke="#c9aa6c" stroke-opacity=".5" stroke-width="2"/><rect x="585" y="94" width="590" height="156" rx="12" fill="url(#body)" stroke="#4a1018" stroke-width="2"/><path d="M595 106 H1165 M595 196 H1165 M595 238 H1165" stroke="#c9aa6c" stroke-width="2.5" stroke-opacity=".8"/><rect x="625" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="701" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="777" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="853" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="929" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="1005" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="1081" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="605" y="250" width="550" height="14" fill="#17121c"/><g class="wheel"><circle cx="665" cy="266" r="24" fill="#17121c" stroke="#c9aa6c" stroke-width="3"/><circle cx="665" cy="266" r="17" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="2"><line x1="665" y1="266" x2="665" y2="248" transform="rotate(0 665 266)"/><line x1="665" y1="266" x2="665" y2="248" transform="rotate(60 665 266)"/><line x1="665" y1="266" x2="665" y2="248" transform="rotate(120 665 266)"/><line x1="665" y1="266" x2="665" y2="248" transform="rotate(180 665 266)"/><line x1="665" y1="266" x2="665" y2="248" transform="rotate(240 665 266)"/><line x1="665" y1="266" x2="665" y2="248" transform="rotate(300 665 266)"/></g><circle cx="665" cy="266" r="5" fill="#c9aa6c"/></g><g class="wheel"><circle cx="725" cy="266" r="24" fill="#17121c" stroke="#c9aa6c" stroke-width="3"/><circle cx="725" cy="266" r="17" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="2"><line x1="725" y1="266" x2="725" y2="248" transform="rotate(0 725 266)"/><line x1="725" y1="266" x2="725" y2="248" transform="rotate(60 725 266)"/><line x1="725" y1="266" x2="725" y2="248" transform="rotate(120 725 266)"/><line x1="725" y1="266" x2="725" y2="248" transform="rotate(180 725 266)"/><line x1="725" y1="266" x2="725" y2="248" transform="rotate(240 725 266)"/><line x1="725" y1="266" x2="725" y2="248" transform="rotate(300 725 266)"/></g><circle cx="725" cy="266" r="5" fill="#c9aa6c"/></g><g class="wheel"><circle cx="1035" cy="266" r="24" fill="#17121c" stroke="#c9aa6c" stroke-width="3"/><circle cx="1035" cy="266" r="17" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="2"><line x1="1035" y1="266" x2="1035" y2="248" transform="rotate(0 1035 266)"/><line x1="1035" y1="266" x2="1035" y2="248" transform="rotate(60 1035 266)"/><line x1="1035" y1="266" x2="1035" y2="248" transform="rotate(120 1035 266)"/><line x1="1035" y1="266" x2="1035" y2="248" transform="rotate(180 1035 266)"/><line x1="1035" y1="266" x2="1035" y2="248" transform="rotate(240 1035 266)"/><line x1="1035" y1="266" x2="1035" y2="248" transform="rotate(300 1035 266)"/></g><circle cx="1035" cy="266" r="5" fill="#c9aa6c"/></g><g class="wheel"><circle cx="1095" cy="266" r="24" fill="#17121c" stroke="#c9aa6c" stroke-width="3"/><circle cx="1095" cy="266" r="17" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="2"><line x1="1095" y1="266" x2="1095" y2="248" transform="rotate(0 1095 266)"/><line x1="1095" y1="266" x2="1095" y2="248" transform="rotate(60 1095 266)"/><line x1="1095" y1="266" x2="1095" y2="248" transform="rotate(120 1095 266)"/><line x1="1095" y1="266" x2="1095" y2="248" transform="rotate(180 1095 266)"/><line x1="1095" y1="266" x2="1095" y2="248" transform="rotate(240 1095 266)"/><line x1="1095" y1="266" x2="1095" y2="248" transform="rotate(300 1095 266)"/></g><circle cx="1095" cy="266" r="5" fill="#c9aa6c"/></g></g>
+  <rect x="560" y="214" width="30" height="12" fill="#2a2030"/>
+  <g><path d="M1201 96 Q1490.0 58 1779 96 Z" fill="#1d1724" stroke="#c9aa6c" stroke-opacity=".5" stroke-width="2"/><rect x="1195" y="94" width="590" height="156" rx="12" fill="url(#body)" stroke="#4a1018" stroke-width="2"/><path d="M1205 106 H1775 M1205 196 H1775 M1205 238 H1775" stroke="#c9aa6c" stroke-width="2.5" stroke-opacity=".8"/><rect x="1235" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="1311" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="1387" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="1463" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="1539" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="1615" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="1691" y="118" width="52" height="58" rx="6" fill="url(#lit)" stroke="#c9aa6c" stroke-width="2"/><rect x="1215" y="250" width="550" height="14" fill="#17121c"/><g class="wheel"><circle cx="1275" cy="266" r="24" fill="#17121c" stroke="#c9aa6c" stroke-width="3"/><circle cx="1275" cy="266" r="17" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="2"><line x1="1275" y1="266" x2="1275" y2="248" transform="rotate(0 1275 266)"/><line x1="1275" y1="266" x2="1275" y2="248" transform="rotate(60 1275 266)"/><line x1="1275" y1="266" x2="1275" y2="248" transform="rotate(120 1275 266)"/><line x1="1275" y1="266" x2="1275" y2="248" transform="rotate(180 1275 266)"/><line x1="1275" y1="266" x2="1275" y2="248" transform="rotate(240 1275 266)"/><line x1="1275" y1="266" x2="1275" y2="248" transform="rotate(300 1275 266)"/></g><circle cx="1275" cy="266" r="5" fill="#c9aa6c"/></g><g class="wheel"><circle cx="1335" cy="266" r="24" fill="#17121c" stroke="#c9aa6c" stroke-width="3"/><circle cx="1335" cy="266" r="17" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="2"><line x1="1335" y1="266" x2="1335" y2="248" transform="rotate(0 1335 266)"/><line x1="1335" y1="266" x2="1335" y2="248" transform="rotate(60 1335 266)"/><line x1="1335" y1="266" x2="1335" y2="248" transform="rotate(120 1335 266)"/><line x1="1335" y1="266" x2="1335" y2="248" transform="rotate(180 1335 266)"/><line x1="1335" y1="266" x2="1335" y2="248" transform="rotate(240 1335 266)"/><line x1="1335" y1="266" x2="1335" y2="248" transform="rotate(300 1335 266)"/></g><circle cx="1335" cy="266" r="5" fill="#c9aa6c"/></g><g class="wheel"><circle cx="1645" cy="266" r="24" fill="#17121c" stroke="#c9aa6c" stroke-width="3"/><circle cx="1645" cy="266" r="17" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="2"><line x1="1645" y1="266" x2="1645" y2="248" transform="rotate(0 1645 266)"/><line x1="1645" y1="266" x2="1645" y2="248" transform="rotate(60 1645 266)"/><line x1="1645" y1="266" x2="1645" y2="248" transform="rotate(120 1645 266)"/><line x1="1645" y1="266" x2="1645" y2="248" transform="rotate(180 1645 266)"/><line x1="1645" y1="266" x2="1645" y2="248" transform="rotate(240 1645 266)"/><line x1="1645" y1="266" x2="1645" y2="248" transform="rotate(300 1645 266)"/></g><circle cx="1645" cy="266" r="5" fill="#c9aa6c"/></g><g class="wheel"><circle cx="1705" cy="266" r="24" fill="#17121c" stroke="#c9aa6c" stroke-width="3"/><circle cx="1705" cy="266" r="17" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="2"><line x1="1705" y1="266" x2="1705" y2="248" transform="rotate(0 1705 266)"/><line x1="1705" y1="266" x2="1705" y2="248" transform="rotate(60 1705 266)"/><line x1="1705" y1="266" x2="1705" y2="248" transform="rotate(120 1705 266)"/><line x1="1705" y1="266" x2="1705" y2="248" transform="rotate(180 1705 266)"/><line x1="1705" y1="266" x2="1705" y2="248" transform="rotate(240 1705 266)"/><line x1="1705" y1="266" x2="1705" y2="248" transform="rotate(300 1705 266)"/></g><circle cx="1705" cy="266" r="5" fill="#c9aa6c"/></g></g>
+  <rect x="1172" y="214" width="26" height="12" fill="#2a2030"/>
+  <!-- 기관차 -->
+  <g>
+    <polygon points="8,290 58,232 96,232 96,290" fill="#2a1a22" stroke="#c9aa6c" stroke-opacity=".6" stroke-width="2"/>
+    <rect x="62" y="206" width="40" height="28" rx="3" fill="#6e1a26" stroke="#c9aa6c" stroke-opacity=".6" stroke-width="2"/>
+    <circle cx="58" cy="214" r="7" fill="#c9aa6c"/><circle cx="58" cy="228" r="7" fill="#c9aa6c"/>
+    <rect x="96" y="104" width="96" height="128" rx="10" fill="#1d1824" stroke="#c9aa6c" stroke-opacity=".55" stroke-width="2"/>
+    <path d="M120 106 V56 H114 V44 H170 V56 H164 V106 Z" fill="#1d1824" stroke="#c9aa6c" stroke-width="2.5"/>
+    <rect x="112" y="40" width="60" height="8" rx="3" fill="url(#brass)"/>
+    <rect x="186" y="112" width="232" height="114" rx="40" fill="url(#boiler)" stroke="#4a1018" stroke-width="2"/>
+    <g stroke="url(#brass)" stroke-width="7"><line x1="238" y1="114" x2="238" y2="224"/><line x1="306" y1="114" x2="306" y2="224"/><line x1="374" y1="114" x2="374" y2="224"/></g>
+    <path d="M270 114 V96 Q270 86 286 86 H312 Q328 86 328 96 V114 Z" fill="url(#brass)"/>
+    <circle cx="144" cy="166" r="40" fill="#14101a" stroke="url(#brass)" stroke-width="6"/>
+    <circle cx="144" cy="166" r="31" fill="none" stroke="#c9aa6c" stroke-opacity=".5" stroke-width="1.5"/>
+    <text x="144" y="175" text-anchor="middle" font-family="Cinzel, Georgia, serif" font-weight="700" font-size="24" fill="#f0d696" letter-spacing="1">2026</text>
+    <path d="M404 228 V70 H548 V228 Z" fill="url(#body)" stroke="#4a1018" stroke-width="2"/>
+    <path d="M392 72 Q476 46 560 72 V82 H392 Z" fill="#1d1724" stroke="#c9aa6c" stroke-opacity=".6" stroke-width="2"/>
+    <rect x="430" y="100" width="70" height="64" rx="8" fill="url(#lit)" stroke="#c9aa6c" stroke-width="3"/>
+    <path d="M414 190 H538" stroke="#c9aa6c" stroke-width="2.5" stroke-opacity=".8"/>
+    <rect x="88" y="226" width="470" height="12" fill="#c9aa6c" fill-opacity=".85"/>
+    <rect x="84" y="238" width="478" height="22" fill="#17121c"/>
+    <g class="wheel"><circle cx="140" cy="264" r="26" fill="#17121c" stroke="#c9aa6c" stroke-width="3"/><circle cx="140" cy="264" r="19" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="2"><line x1="140" y1="264" x2="140" y2="244" transform="rotate(0 140 264)"/><line x1="140" y1="264" x2="140" y2="244" transform="rotate(60 140 264)"/><line x1="140" y1="264" x2="140" y2="244" transform="rotate(120 140 264)"/><line x1="140" y1="264" x2="140" y2="244" transform="rotate(180 140 264)"/><line x1="140" y1="264" x2="140" y2="244" transform="rotate(240 140 264)"/><line x1="140" y1="264" x2="140" y2="244" transform="rotate(300 140 264)"/></g><circle cx="140" cy="264" r="5" fill="#c9aa6c"/></g><g class="wheel"><circle cx="262" cy="242" r="48" fill="#17121c" stroke="#c9aa6c" stroke-width="4"/><circle cx="262" cy="242" r="41" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="3"><line x1="262" y1="242" x2="262" y2="200" transform="rotate(0 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(30 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(60 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(90 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(120 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(150 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(180 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(210 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(240 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(270 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(300 262 242)"/><line x1="262" y1="242" x2="262" y2="200" transform="rotate(330 262 242)"/></g><circle cx="262" cy="242" r="7" fill="#c9aa6c"/></g><g class="wheel"><circle cx="372" cy="242" r="48" fill="#17121c" stroke="#c9aa6c" stroke-width="4"/><circle cx="372" cy="242" r="41" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="3"><line x1="372" y1="242" x2="372" y2="200" transform="rotate(0 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(30 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(60 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(90 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(120 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(150 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(180 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(210 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(240 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(270 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(300 372 242)"/><line x1="372" y1="242" x2="372" y2="200" transform="rotate(330 372 242)"/></g><circle cx="372" cy="242" r="7" fill="#c9aa6c"/></g><g class="wheel"><circle cx="500" cy="264" r="26" fill="#17121c" stroke="#c9aa6c" stroke-width="3"/><circle cx="500" cy="264" r="19" fill="none" stroke="#c9aa6c" stroke-opacity=".45" stroke-width="2"/><g stroke="#c9aa6c" stroke-opacity=".7" stroke-width="2"><line x1="500" y1="264" x2="500" y2="244" transform="rotate(0 500 264)"/><line x1="500" y1="264" x2="500" y2="244" transform="rotate(60 500 264)"/><line x1="500" y1="264" x2="500" y2="244" transform="rotate(120 500 264)"/><line x1="500" y1="264" x2="500" y2="244" transform="rotate(180 500 264)"/><line x1="500" y1="264" x2="500" y2="244" transform="rotate(240 500 264)"/><line x1="500" y1="264" x2="500" y2="244" transform="rotate(300 500 264)"/></g><circle cx="500" cy="264" r="5" fill="#c9aa6c"/></g>
+    <path d="M262 258 H372" stroke="url(#brass)" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>
+</div>
+
+<header class="site-header">
+  <a class="brand" href="#top" aria-label="송년회 초대장 처음으로">
+    <svg viewBox="9.5 3.5 101 131" aria-hidden="true"><path d="M60 6 L108 22 V66 C108 98 86 120 60 132 C34 120 12 98 12 66 V22 Z" fill="none" stroke="#c9aa6c" stroke-width="5"/><path d="M60 34 C68 46 66 54 60 57 C54 54 52 46 60 34 Z" fill="#c9aa6c"/><path d="M34 84 C44 78 52 78 60 84 C68 78 76 78 86 84 V102 C76 96 68 96 60 102 C52 96 44 96 34 102 Z" fill="#c9aa6c"/></svg>
+    <span class="brand-text"><span>Human</span><span>Renaissance</span><span>Academy</span></span>
+  </a>
+  <span class="header-note">A NIGHT TO REMEMBER ✦</span>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="hero-title">
+    <p class="eyebrow">AN INVITATION</p>
+    <h1 id="hero-title"><span class="year">2026</span><span class="name">송년회</span></h1>
+    <p class="club">Human Renaissance Academy</p>
+    <div class="ornament" aria-hidden="true">✧</div>
+    <p class="hero-message">한 해를 함께 걸어온 분들을 모시고<br>촛불 아래 마지막 밤을 밝히려 합니다.</p>
+    <div class="boarding">
+      <button id="board" class="board-btn" type="button">
+        <svg viewBox="0 0 32 20" aria-hidden="true"><path d="M2 2h28v5a3 3 0 0 0 0 6v5H2v-5a3 3 0 0 0 0-6z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M21 3v14" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 2"/></svg>
+        탑승하기
+      </button>
+      <button id="skip" class="skip-btn" type="button">건너뛰기</button>
+    </div>
+    <div class="ticket-stage" id="ticket-stage" hidden>
+      <div class="ticket-fly" id="ticket-fly">
+        <div class="ticket-float">
+          <button class="ticket" id="ticket" type="button" aria-label="송년회 입장권. 눌러서 초대장 열기">
+            <svg class="ticket-art" viewBox="0 0 600 330" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="foil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3dc9c"/><stop offset=".35" stop-color="#b98d3e"/><stop offset=".6" stop-color="#f0d38a"/><stop offset="1" stop-color="#9a7230"/></linearGradient>
+                <radialGradient id="paperG" cx="50%" cy="45%" r="75%"><stop offset="0" stop-color="#f7edd3"/><stop offset=".75" stop-color="#ecdcb6"/><stop offset="1" stop-color="#d9c08e"/></radialGradient>
+              </defs>
+              <path d="M10 2 H590 A8 8 0 0 0 598 10 V150 A15 15 0 0 0 598 180 V320 A8 8 0 0 0 590 328 H10 A8 8 0 0 0 2 320 V180 A15 15 0 0 0 2 150 V10 A8 8 0 0 0 10 2 Z" fill="url(#paperG)"/>
+              <rect x="12" y="12" width="576" height="306" rx="6" fill="none" stroke="url(#foil)" stroke-width="3"/>
+              <rect x="20" y="20" width="560" height="290" rx="4" fill="none" stroke="url(#foil)" stroke-width="1.2"/>
+              <g fill="url(#foil)"><circle cx="110" cy="20" r="1.6"/><circle cx="110" cy="310" r="1.6"/><circle cx="124" cy="20" r="1.6"/><circle cx="124" cy="310" r="1.6"/><circle cx="138" cy="20" r="1.6"/><circle cx="138" cy="310" r="1.6"/><circle cx="152" cy="20" r="1.6"/><circle cx="152" cy="310" r="1.6"/><circle cx="166" cy="20" r="1.6"/><circle cx="166" cy="310" r="1.6"/><circle cx="180" cy="20" r="1.6"/><circle cx="180" cy="310" r="1.6"/><circle cx="194" cy="20" r="1.6"/><circle cx="194" cy="310" r="1.6"/><circle cx="208" cy="20" r="1.6"/><circle cx="208" cy="310" r="1.6"/><circle cx="222" cy="20" r="1.6"/><circle cx="222" cy="310" r="1.6"/><circle cx="236" cy="20" r="1.6"/><circle cx="236" cy="310" r="1.6"/><circle cx="250" cy="20" r="1.6"/><circle cx="250" cy="310" r="1.6"/><circle cx="264" cy="20" r="1.6"/><circle cx="264" cy="310" r="1.6"/><circle cx="278" cy="20" r="1.6"/><circle cx="278" cy="310" r="1.6"/><circle cx="292" cy="20" r="1.6"/><circle cx="292" cy="310" r="1.6"/><circle cx="306" cy="20" r="1.6"/><circle cx="306" cy="310" r="1.6"/><circle cx="320" cy="20" r="1.6"/><circle cx="320" cy="310" r="1.6"/><circle cx="334" cy="20" r="1.6"/><circle cx="334" cy="310" r="1.6"/><circle cx="348" cy="20" r="1.6"/><circle cx="348" cy="310" r="1.6"/><circle cx="362" cy="20" r="1.6"/><circle cx="362" cy="310" r="1.6"/><circle cx="376" cy="20" r="1.6"/><circle cx="376" cy="310" r="1.6"/><circle cx="390" cy="20" r="1.6"/><circle cx="390" cy="310" r="1.6"/><circle cx="404" cy="20" r="1.6"/><circle cx="404" cy="310" r="1.6"/><circle cx="418" cy="20" r="1.6"/><circle cx="418" cy="310" r="1.6"/><circle cx="432" cy="20" r="1.6"/><circle cx="432" cy="310" r="1.6"/><circle cx="446" cy="20" r="1.6"/><circle cx="446" cy="310" r="1.6"/><circle cx="460" cy="20" r="1.6"/><circle cx="460" cy="310" r="1.6"/><circle cx="474" cy="20" r="1.6"/><circle cx="474" cy="310" r="1.6"/><circle cx="488" cy="20" r="1.6"/><circle cx="488" cy="310" r="1.6"/></g>
+              <g transform="" fill="none" stroke="url(#foil)" stroke-width="2.2"><path d="M22 70 V22 H70"/><path d="M30 58 V30 H58" stroke-width="1.2"/><path d="M22 22 L38 38" stroke-width="1.4"/><path d="M78 22 q8 -6 16 0 q-8 6 -16 0z M22 78 q-6 8 0 16 q6 -8 0 -16z" fill="url(#foil)" stroke="none"/><rect x="34" y="34" width="9" height="9" transform="rotate(45 38.5 38.5)" fill="url(#foil)" stroke="none"/></g><g transform="translate(600 0) scale(-1 1)" fill="none" stroke="url(#foil)" stroke-width="2.2"><path d="M22 70 V22 H70"/><path d="M30 58 V30 H58" stroke-width="1.2"/><path d="M22 22 L38 38" stroke-width="1.4"/><path d="M78 22 q8 -6 16 0 q-8 6 -16 0z M22 78 q-6 8 0 16 q6 -8 0 -16z" fill="url(#foil)" stroke="none"/><rect x="34" y="34" width="9" height="9" transform="rotate(45 38.5 38.5)" fill="url(#foil)" stroke="none"/></g><g transform="translate(0 330) scale(1 -1)" fill="none" stroke="url(#foil)" stroke-width="2.2"><path d="M22 70 V22 H70"/><path d="M30 58 V30 H58" stroke-width="1.2"/><path d="M22 22 L38 38" stroke-width="1.4"/><path d="M78 22 q8 -6 16 0 q-8 6 -16 0z M22 78 q-6 8 0 16 q6 -8 0 -16z" fill="url(#foil)" stroke="none"/><rect x="34" y="34" width="9" height="9" transform="rotate(45 38.5 38.5)" fill="url(#foil)" stroke="none"/></g><g transform="translate(600 330) scale(-1 -1)" fill="none" stroke="url(#foil)" stroke-width="2.2"><path d="M22 70 V22 H70"/><path d="M30 58 V30 H58" stroke-width="1.2"/><path d="M22 22 L38 38" stroke-width="1.4"/><path d="M78 22 q8 -6 16 0 q-8 6 -16 0z M22 78 q-6 8 0 16 q6 -8 0 -16z" fill="url(#foil)" stroke="none"/><rect x="34" y="34" width="9" height="9" transform="rotate(45 38.5 38.5)" fill="url(#foil)" stroke="none"/></g>
+            </svg>
+            <span class="t-body">
+              <span class="t-route">JEJU <i>to</i> THE BLANK</span>
+              <span class="t-night">for ONE NIGHT only</span>
+              <svg class="t-crest" viewBox="0 0 120 140" aria-hidden="true">
+        <defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8e2a2f"/><stop offset="1" stop-color="#5e161b"/></linearGradient></defs>
+        <path d="M60 6 L108 22 V66 C108 98 86 120 60 132 C34 120 12 98 12 66 V22 Z" fill="url(#tg)" stroke="#a7802f" stroke-width="4"/>
+        <path d="M32 80 C42 74 52 74 60 80 C68 74 78 74 88 80 V100 C78 94 68 94 60 100 C52 94 42 94 32 100 Z" fill="#f1e4c6" stroke="#a7802f" stroke-width="1.5"/>
+        <line x1="60" y1="80" x2="60" y2="100" stroke="#a7802f" stroke-width="1.5"/>
+        <rect x="56" y="48" width="8" height="24" rx="1.5" fill="#f1e4c6"/>
+        <path d="M60 30 C66 38 65 44 60 46 C55 44 54 38 60 30 Z" fill="#e8b84a"/>
+        <path d="M36 44 l2 5 5 0 -4 3 1.5 5 -4.5 -3 -4.5 3 1.5 -5 -4 -3 5 0 Z" fill="#c9a457"/>
+        <path d="M84 44 l2 5 5 0 -4 3 1.5 5 -4.5 -3 -4.5 3 1.5 -5 -4 -3 5 0 Z" fill="#c9a457"/>
+      </svg>
+              <span class="t-platform">Platform <b>20</b></span>
+              <span class="t-when"><span>2026년 12월 26일 (토) 오후 6시</span><span>더블랭크</span></span>
+              <span class="t-from">HRA 20기 일동</span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <p class="ticket-hint"><span aria-hidden="true">✦</span> 티켓을 눌러 초대장을 열어보세요</p>
+    </div>
+    <a class="details-link" href="#details">THE EVENING ↓</a>
+  </section>
+
+  <section id="details" class="section" aria-labelledby="details-title">
+    <p class="eyebrow">WHEN &amp; WHERE</p>
+    <h2 id="details-title">연회 안내</h2>
+    <dl class="facts">
+      <div><dt><span aria-hidden="true">◷</span>DATE</dt><dd data-event="date"></dd></div>
+      <div><dt><span aria-hidden="true">⌖</span>PLACE</dt><dd data-event="place"></dd></div>
+    </dl>
+    <div class="links">
+      <a class="ghost" data-link="kakaoMap" href="#" rel="noopener">카카오맵으로 보기</a>
+      <a class="ghost" data-link="naverMap" href="#" rel="noopener">네이버 지도로 보기</a>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="order-title">
+    <p class="eyebrow">ORDER OF THE EVENING</p>
+    <h2 id="order-title">연회 순서</h2>
+    <ol class="timeline" id="timeline"></ol>
+  </section>
+
+  <section class="section" aria-labelledby="rsvp-title">
+    <p class="eyebrow">R.S.V.P.</p>
+    <h2 id="rsvp-title">회신 부탁드립니다</h2>
+    <p class="section-desc">원활한 준비를 위해 참석 여부를 알려 주세요.</p>
+    <a class="rsvp-btn" data-link="rsvpForm" href="#" rel="noopener">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#4a1520" stroke="#c9aa6c" stroke-width="1.5"/><path d="M20 9 L22.6 17.4 L31 20 L22.6 22.6 L20 31 L17.4 22.6 L9 20 L17.4 17.4 Z" fill="#c9aa6c"/></svg>
+      참석 여부 회신하기
+    </a>
+    <p class="note">회신 마감: <span data-event="rsvpDeadline"></span></p>
+    <p class="note">참석 여부가 바뀌면 언제든 다시 제출해 주세요.<br>가장 마지막 응답을 기준으로 합니다.</p>
+  </section>
+</main>
+
+<footer>
+  <span>Human Renaissance Academy · 송년회</span>
+  <span>문의 <strong data-event="contact"></strong></span>
+</footer>
+
+<dialog id="invitation" aria-labelledby="invitation-title">
+  <div class="toolbar"><span>YOUR INVITATION</span><button id="close-invitation" type="button" aria-label="초대장 닫기">닫기 ×</button></div>
+  <div class="scroll">
+  <div class="roll top" aria-hidden="true"></div>
+  <article class="parchment">
+    <svg class="crest" viewBox="0 0 120 140" aria-hidden="true">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8e2a2f"/><stop offset="1" stop-color="#5e161b"/></linearGradient></defs>
+      <path d="M60 6 L108 22 V66 C108 98 86 120 60 132 C34 120 12 98 12 66 V22 Z" fill="url(#g)" stroke="#a7802f" stroke-width="3"/>
+      <path d="M32 80 C42 74 52 74 60 80 C68 74 78 74 88 80 V100 C78 94 68 94 60 100 C52 94 42 94 32 100 Z" fill="#f1e4c6" stroke="#a7802f" stroke-width="1.5"/>
+      <line x1="60" y1="80" x2="60" y2="100" stroke="#a7802f" stroke-width="1.5"/>
+      <rect x="56" y="48" width="8" height="24" rx="1.5" fill="#f1e4c6"/>
+      <path d="M60 30 C66 38 65 44 60 46 C55 44 54 38 60 30 Z" fill="#e8b84a"/>
+      <path d="M36 44 l2 5 5 0 -4 3 1.5 5 -4.5 -3 -4.5 3 1.5 -5 -4 -3 5 0 Z" fill="#c9a457"/>
+      <path d="M84 44 l2 5 5 0 -4 3 1.5 5 -4.5 -3 -4.5 3 1.5 -5 -4 -3 5 0 Z" fill="#c9a457"/>
+    </svg>
+    <p class="eyebrow pen">Annual Gathering · MMXXVI</p>
+    <h2 id="invitation-title">2026 송년회 초대장<span>Human Renaissance Academy</span></h2>
+    <div class="ornament" aria-hidden="true">✧</div>
+    <p class="salute">존경하는 교수님, 선배님, 후원자님께</p>
+    <div class="letter">
+      <p>한 해 동안 저희와 걸음을 함께해 주신 모든 분께 깊이 감사드립니다.<br>여러분의 가르침과 응원으로 저희는 올해도 배우고 나누며 한 뼘 더 자랄 수 있었습니다.</p>
+      <p>이에 촛불을 밝히고 한 해를 마무리하는 송년회를 열고자 하오니,<br>부디 귀한 걸음으로 자리를 빛내 주시기를 정중히 청합니다.</p>
+    </div>
+    <dl class="letter-facts">
+      <div><dt>일시</dt><dd data-event="dateShort"></dd></div>
+      <div><dt>장소</dt><dd data-event="place"></dd></div>
+    </dl>
+    <p class="signature">HRA 20기 일동</p>
+    <div class="share">
+      <a class="share-rsvp" data-link="rsvpForm" href="#" rel="noopener">✦ 참석 여부 회신</a>
+      <p class="share-note">회신 마감 <span data-event="rsvpDeadline"></span></p>
+      <button id="copy-url" class="share-copy" type="button">⧉ URL 복사</button>
+    </div>
+    <p id="status" role="status" aria-live="polite"></p>
+    <div id="manual-copy" hidden><label for="invitation-url">아래 주소를 선택해 복사해 주세요.</label><input id="invitation-url" type="url" readonly></div>
+  </article>
+  <div class="roll bottom" aria-hidden="true"></div>
+  </div>
+</dialog>
+
+<script>
+'use strict';
+// ── 행사 정보: 정해지면 이 부분만 고치세요 ──
+const EVENT = Object.freeze({
+  date: '2026년 12월 26일 (토)\n오후 6시',
+  dateShort: '12월 26일 (토) 오후 6시',
+  place: '더블랭크\n제주시 도남서길 22, 1층',
+  rsvpDeadline: '12월 21일 (월)',
+  contact: '010-0000-0000',
+  links: {
+    kakaoMap: 'https://map.kakao.com/link/search/' + encodeURIComponent('제주 더블랭크 도남서길'),
+    naverMap: 'https://map.naver.com/p/search/' + encodeURIComponent('더블랭크 제주시 도남서길 22'),
+    rsvpForm: 'https://forms.gle/LZHSiPH9U5SNS8ZV6',
+  },
+  timeline: [
+    ['18:00', '입장 및 방명록', '도착하신 분부터 자리 안내'],
+    ['18:30', '개회사 · 교수님 말씀', ''],
+    ['19:00', '만찬', ''],
+    ['20:00', '한 해 돌아보기 · 시상', '올해의 활동 영상과 감사패 전달'],
+    ['20:40', '기념 촬영', ''],
+    ['21:00', '폐회', ''],
+  ],
+});
+
+for (const el of document.querySelectorAll('[data-event]')) {
+  const v = EVENT[el.dataset.event];
+  el.textContent = v;
+  if (v === '추후 안내') el.classList.add('tbd');
+  if (typeof v === 'string' && v.includes('\n')) el.style.whiteSpace = 'pre-line';
+}
+for (const a of document.querySelectorAll('[data-link]')) {
+  const url = EVENT.links[a.dataset.link];
+  if (url) { a.href = url; a.target = '_blank'; }
+  else { a.addEventListener('click', (e) => { e.preventDefault(); a.blur(); }); a.title = '링크 준비 중'; a.setAttribute('aria-disabled', 'true'); }
+}
+const tl = document.getElementById('timeline');
+for (const [time, title, sub] of EVENT.timeline) {
+  const li = document.createElement('li');
+  li.innerHTML = '<time></time><div><span></span>' + (sub ? '<small></small>' : '') + '</div>';
+  li.querySelector('time').textContent = time;
+  li.querySelector('span').textContent = title;
+  if (sub) li.querySelector('small').textContent = sub;
+  tl.appendChild(li);
+}
+
+// ── 초대장 열기/닫기 ──
+const dialog = document.getElementById('invitation');
+const openBtn = document.getElementById('ticket');
+const closeBtn = document.getElementById('close-invitation');
+const status = document.getElementById('status');
+const manual = document.getElementById('manual-copy');
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let timer;
+if (openBtn) openBtn.addEventListener('click', () => {
+  if (dialog.open || openBtn.classList.contains('opening')) return;
+  openBtn.classList.add('opening');
+  timer = setTimeout(() => {
+    dialog.showModal();
+    document.body.style.overflow = 'hidden';
+    dialog.scrollTop = 0;
+    closeBtn.focus({ preventScroll: true });
+    openBtn.classList.remove('opening');
+  }, 0);
+});
+closeBtn.addEventListener('click', () => dialog.close());
+dialog.addEventListener('close', () => {
+  clearTimeout(timer);
+  document.body.style.overflow = '';
+  status.textContent = '';
+  manual.hidden = true;
+  if (openBtn) openBtn.focus({ preventScroll: true });
+});
+
+// ── URL 복사 (막히면 직접 복사 안내) ──
+function pageURL() { const u = new URL(location.href); u.hash = ''; return u.href; }
+document.getElementById('copy-url').addEventListener('click', async () => {
+  manual.hidden = true;
+  try {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error('no clipboard');
+    await navigator.clipboard.writeText(pageURL());
+    status.textContent = '초대장 주소를 복사했습니다.';
+  } catch (e) {
+    manual.hidden = false;
+    const input = document.getElementById('invitation-url');
+    input.value = pageURL(); input.focus(); input.select();
+    status.textContent = '자동 복사를 사용할 수 없어요. 주소를 직접 복사해 주세요.';
+  }
+});
+
+// ── 바닥에 깔려 천천히 흘러가는 증기 ──
+(function () {
+  const c = document.getElementById('steam'); const ctx = c.getContext && c.getContext('2d');
+  if (!ctx) return;
+  let puffs = [], w = 0, h = 0;
+  const MIST = (() => { const m = document.createElement('canvas'); m.width = m.height = 128; const x = m.getContext('2d');
+    const g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(246,226,198,1)'); g.addColorStop(1, 'rgba(246,226,198,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128); return m; })();
+  function resize() {
+    const k = .5; w = c.clientWidth; h = c.clientHeight;  // 뿌연 증기라 절반 해상도로 그려도 차이가 없음
+    c.width = Math.ceil(w * k); c.height = Math.ceil(h * k); ctx.setTransform(k, 0, 0, k, 0, 0);
+    puffs = Array.from({ length: Math.min(16, Math.max(8, Math.round(w / 90))) }, () => ({
+      x: Math.random() * w, y: h * (.55 + Math.random() * .4), r: 60 + Math.random() * 110,
+      v: 6 + Math.random() * 10, a: .05 + Math.random() * .07, p: Math.random() * 6.28 }));
+  }
+  let last = 0;
+  function draw(t) {
+    const dt = last ? Math.min((t - last) / 1000, .05) : 0; last = t;
+    ctx.clearRect(0, 0, w, h);
+    for (const q of puffs) {
+      if (!reduce) { q.x -= q.v * dt; if (q.x < -q.r) q.x = w + q.r; }
+      const yy = q.y + Math.sin(t / 2600 + q.p) * 6;
+      ctx.globalAlpha = Math.min(.45, q.a * (1 + 2.2 * (window.steamBoost || 0)));
+      ctx.drawImage(MIST, q.x - q.r * 1.6, yy - q.r * .6, q.r * 3.2, q.r * 1.2);
+      ctx.globalAlpha = 1;
+    }
+    if (!reduce) requestAnimationFrame(draw);
+  }
+  resize(); addEventListener('resize', resize); requestAnimationFrame(draw);
+})();
+
+// ── 탑승하기: 0~0.2초 증기 짙어짐 → 0.2~1.8초 기차 통과 → 0.3~1.6초 화면 흔들림 ──
+(function () {
+  const board = document.getElementById('board');
+  const track = document.getElementById('train-track');
+  const train = track.querySelector('.train');
+  const smoke = document.getElementById('smoke'); const sctx = smoke.getContext('2d');
+  let running = false;
+  window.steamBoost = 0;
+  const PUFF = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+    const g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(240,230,216,1)'); g.addColorStop(.6, 'rgba(214,200,182,.5)'); g.addColorStop(1, 'rgba(214,200,182,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 128); return c; })();
+
+  function shakeFrames() {
+    const f = [], n = 28;
+    for (let i = 0; i <= n; i++) {
+      const p = i / n, amp = (p < .12 ? p / .12 : Math.pow(1 - (p - .12) / .88, 1.4)) * 4;
+      const sx = i % 2 ? 1 : -1, j = .6 + .4 * Math.abs(Math.sin(i * 12.9898));
+      f.push({ transform: i === n ? 'none' : `translate(${(sx * amp * j).toFixed(2)}px, ${(amp * .3 * Math.sin(i * 2.3)).toFixed(2)}px)` });
+    }
+    return f;
+  }
+
+  board.addEventListener('click', () => {
+    if (running) return;
+    if (reduce) { landNow(); return; }
+    running = true; board.disabled = true;
+    const isPhone = innerWidth < 600, th = isPhone ? 190 : 290, room = th + 260;
+    const bottom = Math.min(860, scrollY + innerHeight - 8);
+    track.style.top = (bottom - room) + 'px'; track.style.height = room + 'px';
+    track.style.setProperty('--train-h', th + 'px');
+    track.hidden = false;
+    const cw = track.clientWidth, ch = room;
+    smoke.width = cw; smoke.height = ch; sctx.setTransform(1, 0, 0, 1, 0, 0);
+    const tw = th * 6, scale = th / 300;
+
+    const move = train.animate([{ transform: `translateX(${cw}px)` }, { transform: `translateX(${-tw - 40}px)` }],
+      { duration: 1600, delay: 200, easing: 'cubic-bezier(.35,.05,.75,.95)', fill: 'both' });
+    const shaken = [document.querySelector('.sky'), document.querySelector('.site-header'), document.querySelector('main'), document.querySelector('footer')];
+    const frames = shakeFrames();
+    shaken.forEach(el => el && el.animate(frames, { duration: 1300, delay: 300, easing: 'linear' }));
+
+    const puffs = []; const t0 = performance.now(); let last = t0;
+    function tick(now) {
+      const t = (now - t0) / 1000, dt = Math.min((now - last) / 1000, .05); last = now;
+      window.steamBoost = t < .2 ? t / .2 : Math.max(0, 1 - (t - .2) / 1.6);
+      const m = new DOMMatrixReadOnly(getComputedStyle(train).transform);
+      const cx = m.m41 + 142 * scale, cy = ch - th + 42 * scale;
+      if (t > .2 && t < 1.8 && cx > -60 && cx < cw + 60) {
+        if (puffs.length < 70) puffs.push({ x: cx + (Math.random() - .5) * 10 * scale, y: cy, r: (10 + Math.random() * 10) * scale + 4,
+          vx: 40 + Math.random() * 90, vy: -(70 + Math.random() * 80) * (isPhone ? .7 : 1), life: 0, max: 1.1 + Math.random() * .6 });
+      }
+      sctx.clearRect(0, 0, cw, ch);
+      for (let i = puffs.length - 1; i >= 0; i--) {
+        const q = puffs[i]; q.life += dt;
+        if (q.life > q.max) { puffs.splice(i, 1); continue; }
+        q.x += q.vx * dt; q.y += q.vy * dt; q.vy *= .985; q.r += 26 * dt * (isPhone ? .7 : 1);
+        sctx.globalAlpha = .5 * (1 - q.life / q.max);
+        sctx.drawImage(PUFF, q.x - q.r, q.y - q.r, q.r * 2, q.r * 2);
+      }
+      sctx.globalAlpha = 1;
+      if (t < 3) requestAnimationFrame(tick);
+      else { track.hidden = true; move.cancel(); window.steamBoost = 0; }
+    }
+    requestAnimationFrame(tick);
+    setTimeout(() => boarding.classList.add('leaving'), 1300);
+    setTimeout(flyTicket, 1500);
+  });
+
+  // ── 티켓: 1.5초에 기차 바람에 날려 들어와 2.7~3.0초에 가운데 멈춤 ──
+  const boarding = document.querySelector('.boarding');
+  const stage = document.getElementById('ticket-stage');
+  const fly = document.getElementById('ticket-fly');
+  const floatEl = stage.querySelector('.ticket-float');
+  function flyTicket() {
+    boarding.classList.add('gone');
+    stage.hidden = false;
+    fly.classList.add('flying');
+    const a = fly.animate([
+      { transform: 'translate(75vw, -60px) rotate(-220deg) rotateY(0deg) scale(.55)', opacity: 0 },
+      { transform: 'translate(55vw, -80px) rotate(-170deg) rotateX(30deg) scale(.65)', opacity: 1, offset: .1 },
+      { transform: 'translate(22vw, -120px) rotate(-100deg) rotateX(55deg) rotateY(90deg) scale(.8)', offset: .3 },
+      { transform: 'translate(-14vw, -40px) rotate(-35deg) rotateY(180deg) scale(.92)', offset: .5 },
+      { transform: 'translate(9vw, -70px) rotate(18deg) rotateX(-25deg) rotateY(290deg) scale(.98)', offset: .66 },
+      { transform: 'translate(0, -14px) rotate(-5deg) rotateY(360deg) scale(1.03)', offset: .8 },
+      { transform: 'translate(0, 5px) rotate(2deg) rotateY(360deg) scale(.99)', offset: .91 },
+      { transform: 'translate(0, 0) rotate(0deg) rotateY(360deg) scale(1)' }
+    ], { duration: 1420, easing: 'linear', fill: 'forwards' });
+    a.onfinish = () => { a.cancel(); fly.style.transform = 'none'; fly.classList.remove('flying'); floatEl.classList.add('landed'); stage.classList.add('done'); };
+  }
+
+  // ── 건너뛰기 · 동작 줄이기: 연출 없이 티켓이 놓인 화면으로 ──
+  function landNow() {
+    running = true;
+    boarding.classList.add('gone');
+    stage.hidden = false;
+    if (!reduce) floatEl.classList.add('landed');
+    stage.classList.add('done');
+    document.getElementById('ticket').focus({ preventScroll: true });
+  }
+  document.getElementById('skip').addEventListener('click', () => { if (!running) landNow(); });
+})();
+</script>
+</body>
+</html>
